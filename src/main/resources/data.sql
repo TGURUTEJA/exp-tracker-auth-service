@@ -4,7 +4,7 @@ INSERT INTO userCred (username, email, password,is_verified) VALUES
 ('johndoe',   'john.doe@example.com',   'password123',true),
 ('janesmith', 'jane.smith@example.com', 'securepass',true),
 ('test',    'alice.johnson@example.com', 'test',true),
-('testuser',  't.guruteja5@gmail.com',  'testpass', false);
+('testuser',  't.guruteja5@gmail.com',  'testpass', true);
 
 -- Reset sequences
 SELECT setval('usercred_id_seq',

@@ -13,5 +13,6 @@ public class AuthResponse {
     List<CheckMessage> errorData;
     String message;
     Long ID;
+    String token;  // JWT token included in response
 }
 

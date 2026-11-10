@@ -3,6 +3,7 @@ package com.Auth_service.controller;
 import java.util.Map;
 import com.Auth_service.pojo.AuthResponse;
 import com.Auth_service.pojo.RegisterRequest;
+import com.Auth_service.pojo.TestJwtRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -68,6 +69,24 @@ public class AuthController {
     @GetMapping(value = "/refresh-token")
     public ResponseEntity<AuthResponse> refreshToken(HttpServletRequest request) {
         return authService.refreshToken(request);
+    }
+
+    /**
+     * Test endpoint to generate a JWT token for development/testing purposes.
+     * DISABLED IN PRODUCTION - set app.jwt.test-endpoint.enabled=false in application.properties
+     * 
+     * Payload example:
+     * {
+     *   "sub": "JWTAUth",
+     *   "role": "USER",
+     *   "iss": "auth-service",
+     *   "password_reset_token": false,
+     *   "ID": 1
+     * }
+     */
+    @PostMapping(value = "/test-jwt-generator")
+    public ResponseEntity<AuthResponse> generateTestJwt(@RequestBody TestJwtRequest testJwtRequest) {
+        return authService.generateTestJwt(testJwtRequest);
     }
 
 //    @PostMapping("/deleate-account")

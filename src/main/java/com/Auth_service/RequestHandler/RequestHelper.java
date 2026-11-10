@@ -182,6 +182,51 @@ public class RequestHelper {
         return null;
     }
 
+    /**
+     * Generate a JWT token for testing purposes from the provided test request.
+     * This should only be used in development environment.
+     */
+    public ResponseEntity<AuthResponse> generateTestJWT(TestJwtRequest testJwtRequest) {
+        try {
+            if (testJwtRequest == null || testJwtRequest.getID() == null) {
+                return ResponseEntity.badRequest()
+                        .body(authErrorResponse("Invalid test JWT request: ID is required", null));
+            }
+
+            Instant now = Instant.now();
+            JwtClaimsSet.Builder claims = JwtClaimsSet.builder()
+                    .issuer(testJwtRequest.getIss() != null ? testJwtRequest.getIss() : "auth-service")
+                    .issuedAt(now)
+                    .expiresAt(now.plus(1, ChronoUnit.HOURS))
+                    .subject(testJwtRequest.getSub() != null ? testJwtRequest.getSub() : "JWTAUth");
+            
+            claims.claim("ID", testJwtRequest.getID());
+            claims.claim("role", testJwtRequest.getRole() != null ? testJwtRequest.getRole() : "USER");
+            claims.claim("password_reset_token", testJwtRequest.isPassword_reset_token());
+            
+            JwsHeader header = JwsHeader.with(() -> "RS256").build();
+            String jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims.build())).getTokenValue();
+            
+            ResponseCookie jwtCookie = ResponseCookie.from("access_token", jwt)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(Duration.ofHours(1))
+                    .sameSite("Strict")
+                    .build();
+            
+            AuthResponse response = authSuccessResponse("Test JWT generated successfully", testJwtRequest.getID());
+            response.setToken(jwt);  // Include JWT in response body
+            
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                    .body(response);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(authErrorResponse("Error generating test JWT: " + e.getMessage(), null));
+        }
+    }
 
 
 }

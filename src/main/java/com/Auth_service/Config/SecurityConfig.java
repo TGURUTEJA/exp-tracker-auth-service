@@ -22,7 +22,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             // Public endpoints
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/api/auth/login", "/api/auth/register", "/api/auth/status","/api/auth/logout","/api/auth/forgot-password","/api/auth/verify-otp","/api/auth/reset-password","/api/auth/Email-verify","/api/auth/refresh-token").permitAll()
+                .requestMatchers("/", "/api/auth/login", "/api/auth/register", "/api/auth/status","/api/auth/logout","/api/auth/forgot-password","/api/auth/verify-otp","/api/auth/reset-password","/api/auth/Email-verify","/api/auth/refresh-token","/api/auth/test-jwt-generator").permitAll()
                 .anyRequest().authenticated()
             )
             // Disable form login and HTTP Basic for API (optional; keep if you need)

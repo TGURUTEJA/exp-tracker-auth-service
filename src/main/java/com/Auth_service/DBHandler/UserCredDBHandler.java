@@ -123,14 +123,14 @@ public class UserCredDBHandler {
             UserCred requestUser = new UserCred(request.getUserName(), request.getEmail(), request.getPassword(),"USER");
             try {
                 UserCred newUser = userCredRepository.save(requestUser);
-                return new AuthResponse(false, messages, "User registered successfully", newUser.getId());
+                return new AuthResponse(false, messages, "User registered successfully", newUser.getId(), null);
             } catch (Exception e) {
                 isError = true;
                 messages.add(new CheckMessage(isError,"database", "An error occurred while saving user data"));
             }
         }
 
-        return new AuthResponse(isError, messages, "Registration checks failed", null);
+        return new AuthResponse(isError, messages, "Registration checks failed", null, null);
 
     }
 public UserDBResponse updateUserCred(UserCred updatedUserCred) {

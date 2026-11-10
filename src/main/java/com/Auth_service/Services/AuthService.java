@@ -5,8 +5,10 @@ import java.util.Arrays;
 
 import com.Auth_service.pojo.AuthResponse;
 import com.Auth_service.pojo.RegisterRequest;
+import com.Auth_service.pojo.TestJwtRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -21,6 +23,9 @@ public class AuthService {
     
     @Autowired
     RequestHandler requestHandler;
+
+    @Value("${app.jwt.test-endpoint.enabled:false}")
+    private boolean testJwtEndpointEnabled;
 
 
     public ResponseEntity<AuthResponse> registerUser(RegisterRequest request) {
@@ -43,7 +48,7 @@ public class AuthService {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
-                .body(new AuthResponse(false,new ArrayList<>(), "Logged out successfully",null));
+                .body(new AuthResponse(false,new ArrayList<>(), "Logged out successfully",null, null));
     }
 
     public ResponseEntity<AuthResponse> forgotPassword(String email, String username) {
@@ -76,7 +81,20 @@ public class AuthService {
         }
         return requestHandler.refreshToken(token);
     }
-    // helper to cookie-extraction logic
+
+    /**
+     * Generate a test JWT token for development purposes only.
+     * This endpoint should be disabled in production.
+     */
+    public ResponseEntity<AuthResponse> generateTestJwt(TestJwtRequest testJwtRequest) {
+        if (!testJwtEndpointEnabled) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new AuthResponse(true, new ArrayList<>(), "Test JWT endpoint is disabled", null, null));
+        }
+        return requestHandler.generateTestJWT(testJwtRequest);
+    }
+
+    // ...existing code...
     private String getAccessTokenFromCookies(HttpServletRequest request) {
         if (request == null || request.getCookies() == null) {
             return null;

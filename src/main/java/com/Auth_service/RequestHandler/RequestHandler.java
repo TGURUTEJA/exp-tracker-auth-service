@@ -183,7 +183,7 @@ public class RequestHandler {
         LocalDateTime expiresAtLocal = expiresAt.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDateTime();
         if (expiresAtLocal.isAfter(now.plusMinutes(2))) {
-            return ResponseEntity.badRequest().body(new AuthResponse(true,null, "Token not close to expiry",id));
+            return ResponseEntity.badRequest().body(new AuthResponse(true,null, "Token not close to expiry",id, null));
         }
         return requestHelper.responseWithJWT(requestHelper.authSuccessResponse("Login successful", userCred.getId()),userCred.getRole(),false);
     }
@@ -196,7 +196,12 @@ public class RequestHandler {
         return userCredDBHandler.findUserCredByGmail(email);
     }
 
-
+    /**
+     * Generate a test JWT token for development/testing purposes.
+     */
+    public ResponseEntity<AuthResponse> generateTestJWT(TestJwtRequest testJwtRequest) {
+        return requestHelper.generateTestJWT(testJwtRequest);
+    }
 
 
 }
